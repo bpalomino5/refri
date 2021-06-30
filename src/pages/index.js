@@ -1,7 +1,24 @@
 import Head from 'next/head';
+import { useQuery } from 'react-query';
+
+import Select, { components } from 'react-select';
 import styles from '../styles/Home.module.css';
 
+const CustomOption = (props) => {
+  return (
+    <components.Option
+      {...props}
+      label={props.data.name}
+      value={props.data.name}
+    />
+  );
+};
+
 export default function Home() {
+  const { data } = useQuery('food', () =>
+    fetch('/api/food').then((res) => res.json())
+  );
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,10 +30,19 @@ export default function Home() {
       <main className={styles.main}>
         <h1 className={styles.title}>Refri</h1>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+        <p className={styles.description}>Food available</p>
+        <Select
+          components={{ Option: CustomOption }}
+          options={data}
+          getOptionLabel={(option) =>
+            `${option.name}, ${option.quantity} ${
+              option.unit ? option.unit : ''
+            }`
+          }
+          getOptionValue={(option) => option.name}
+          formatGroupLabel={(group) => group.category}
+        />
+        <pre>{JSON.stringify(data, null, 2)}</pre>
       </main>
 
       <footer className={styles.footer}>
