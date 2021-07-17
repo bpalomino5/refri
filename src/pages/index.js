@@ -7,7 +7,6 @@ const firestore = firebase.firestore();
 import Select from 'react-select';
 
 // Hooks
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import useFood from '../hooks/use-food';
@@ -16,17 +15,6 @@ import useFood from '../hooks/use-food';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
-  useEffect(() => {
-    const init = async () => {
-      const querySnapshot = await firestore.collection('categories').get();
-      querySnapshot.forEach((doc) => {
-        console.log(doc.data());
-      });
-      //const doc = await firestore.collection('categories').doc('Dairy').get();
-      //console.log(doc.get('almond-milk').unit.id);
-    };
-    init();
-  });
   const router = useRouter();
   const foodQuery = useFood();
 
