@@ -2,20 +2,27 @@ const food = [
   {
     category: 'Dairy',
     options: [
-      { name: 'almond milk', quantity: 1, unit: 'bottle(s)' },
-      { name: 'a2 milk', quantity: 1, unit: 'bottle(s)' },
+      {
+        id: 'almond-milk',
+        name: 'almond milk',
+        quantity: 1,
+        unit: 'bottle(s)',
+      },
+      { id: 'a2-milk', name: 'a2 milk', quantity: 1, unit: 'bottle(s)' },
     ],
   },
   {
     category: 'Fruits',
     options: [
-      { name: 'apple', quantity: 1, unit: null },
-      { name: 'orange', quantity: 2, unit: null },
+      { id: 'apple', name: 'apple', quantity: 1, unit: null },
+      { id: 'orange', name: 'orange', quantity: 2, unit: null },
     ],
   },
   {
     category: 'Juice',
-    options: [{ name: 'chicha', quantity: 10, unit: 'bottle(s)' }],
+    options: [
+      { id: 'chicha', name: 'chicha', quantity: 10, unit: 'bottle(s)' },
+    ],
   },
 ];
 
