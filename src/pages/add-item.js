@@ -2,15 +2,54 @@
 import firebase from '../lib/firebase';
 const firestore = firebase.firestore();
 
+// Components
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Box,
+  Select,
+  Container,
+  Center,
+  Heading,
+  Button,
+  HStack,
+  useNumberInput,
+} from '@chakra-ui/react';
+
 // Hooks
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import useCollection from '../hooks/use-collection';
 
+const NumberInput = ({ quantity, setQuantity }) => {
+  const {
+    getInputProps,
+    getIncrementButtonProps,
+    getDecrementButtonProps,
+  } = useNumberInput({
+    min: 0,
+    value: quantity,
+    onChange: (valueString) => setQuantity(valueString),
+  });
+
+  const inc = getIncrementButtonProps();
+  const dec = getDecrementButtonProps();
+  const input = getInputProps();
+
+  return (
+    <HStack maxW="320px">
+      <Button {...inc}>+</Button>
+      <Input {...input} />
+      <Button {...dec}>-</Button>
+    </HStack>
+  );
+};
+
 const AddItem = () => {
   const router = useRouter();
-  const [category, setCategory] = useState('Dairy');
-  const [unit, setUnit] = useState('bottle(s)');
+  const [category, setCategory] = useState(null);
+  const [unit, setUnit] = useState(null);
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState(0);
 
@@ -39,54 +78,51 @@ const AddItem = () => {
   };
 
   return (
-    <div style={{ padding: 12 }}>
-      <h1>Add Item</h1>
-      <form style={{ display: 'flex', flexDirection: 'column' }}>
-        <label for="category">category</label>
-        <select
-          name="category"
-          id="category"
-          onChange={(e) => setCategory(e.target.value)}
-          value={category}
-        >
-          {categoriesQuery.data.map((category) => (
-            <option value={category}>{category}</option>
-          ))}
-        </select>
+    <Container sx={{ p: 4 }}>
+      <Center>
+        <Heading as="h1">Add Item</Heading>
+      </Center>
 
-        <label for="name">name</label>
-        <input
-          value={name}
-          name="name"
-          id="name"
-          onChange={(e) => setName(e.target.value)}
-        />
+      <Box sx={{ my: 4, d: 'flex', flexDirection: 'column' }}>
+        <FormControl id="category" sx={{ mb: 4 }}>
+          <FormLabel>Category</FormLabel>
+          <Select
+            onChange={(e) => setCategory(e.target.value)}
+            value={category}
+            placeholder="Select category"
+          >
+            {categoriesQuery.data.map((category) => (
+              <option value={category}>{category}</option>
+            ))}
+          </Select>
+        </FormControl>
 
-        <label for="quantity">quantity</label>
-        <input
-          value={quantity}
-          name="quantity"
-          id="quantity"
-          onChange={(e) => setQuantity(e.target.value)}
-        />
+        <FormControl id="item-name" sx={{ mb: 4 }}>
+          <FormLabel>Item name</FormLabel>
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
+        </FormControl>
 
-        <label for="unit">unit</label>
-        <select
-          name="unit"
-          id="unit"
-          onChange={(e) => setUnit(e.target.value)}
-          value={unit}
-        >
-          {unitsQuery.data.map((unit) => (
-            <option value={unit}>{unit}</option>
-          ))}
-        </select>
+        <FormControl id="quantity" sx={{ mb: 4 }}>
+          <FormLabel>Quantity</FormLabel>
+          <NumberInput quantity={quantity} setQuantity={setQuantity} />
+        </FormControl>
 
-        <button type="button" style={{ marginTop: 8 }} onClick={saveItem}>
-          Save
-        </button>
-      </form>
-    </div>
+        <FormControl id="unit" sx={{ mb: 4 }}>
+          <FormLabel>Unit</FormLabel>
+          <Select
+            onChange={(e) => setUnit(e.target.value)}
+            value={unit}
+            placeholder="Select unit"
+          >
+            {unitsQuery.data.map((unit) => (
+              <option value={unit}>{unit}</option>
+            ))}
+          </Select>
+        </FormControl>
+
+        <Button onClick={saveItem}>Save</Button>
+      </Box>
+    </Container>
   );
 };
 
