@@ -22,15 +22,10 @@ const fetchFood = async () => {
 };
 
 const useFood = () => {
-  const foodQuery = useQuery(
-    'food',
-    fetchFood,
-    //() => fetch('/api/food').then((res) => res.json()),
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-    }
-  );
+  const foodQuery = useQuery('food', fetchFood, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
   return foodQuery;
 };

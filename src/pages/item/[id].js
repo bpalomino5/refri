@@ -1,5 +1,7 @@
 // Libraries
 import { useQuery, useQueryClient } from 'react-query';
+import firebase from '../../lib/firebase';
+const firestore = firebase.firestore();
 
 // Hooks
 import { useRouter } from 'next/router';
@@ -28,9 +30,16 @@ const FoodItem = () => {
     }
   };
 
-  const updateItem = () => {
-    // update API
-    console.log('update api call');
+  const updateItem = async () => {
+    const docId = foodQuery.data[category].category;
+    const item = foodQuery.data[category].options[option];
+
+    await firestore
+      .collection('categories')
+      .doc(docId)
+      .update({
+        [`${id}.quantity`]: item.quantity,
+      });
     router.back();
   };
 

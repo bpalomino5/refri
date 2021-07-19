@@ -40,6 +40,26 @@ export default function Home() {
     return label;
   };
 
+  /*
+   * Only updates item quantities
+   */
+  const updateAllItems = async () => {
+    const ps = [];
+    foodQuery.data.forEach((category) => {
+      category.options.forEach((option) =>
+        ps.push(
+          firestore
+            .collection('categories')
+            .doc(category.category)
+            .update({
+              [`${option.id}.quantity`]: option.quantity,
+            })
+        )
+      );
+    });
+    await Promise.all(ps);
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -52,9 +72,6 @@ export default function Home() {
         <h1 className={styles.title}>Refri</h1>
 
         <p className={styles.description}>Food available</p>
-        <button type="button" onClick={() => router.push('/add-item')}>
-          Add
-        </button>
         <Select
           placeholder="Check what's available"
           options={foodQuery.data}
@@ -64,8 +81,14 @@ export default function Home() {
           noOptionsMessage={() => 'Not found'}
           onChange={findItem}
         />
+        <button type="button" onClick={() => router.push('/add-item')}>
+          Add
+        </button>
+        <button type="button" onClick={updateAllItems}>
+          Save All
+        </button>
 
-        <pre>{JSON.stringify(foodQuery.data, null, 2)}</pre>
+        {/*<pre>{JSON.stringify(foodQuery.data, null, 2)}</pre>*/}
       </main>
 
       <footer className={styles.footer}>
