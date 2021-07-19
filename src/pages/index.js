@@ -20,9 +20,6 @@ import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import useFood from '../hooks/use-food';
 
-// Styles
-import styles from '../styles/Home.module.css';
-
 export default function Home() {
   const router = useRouter();
   const foodQuery = useFood();
@@ -88,8 +85,6 @@ export default function Home() {
           <Button onClick={() => router.push('/add-item')}>Add</Button>
           <Button onClick={updateAllItems}>Save All</Button>
         </ButtonGroup>
-
-        {/*<pre>{JSON.stringify(foodQuery.data, null, 2)}</pre>*/}
       </main>
 
       <Spacer />
