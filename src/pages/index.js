@@ -1,7 +1,5 @@
 // Libraries
-import Head from 'next/head';
-import firebase from '../lib/firebase';
-const firestore = firebase.firestore();
+import { firestore } from '../lib/firebase';
 
 // Components
 import Select from 'react-select';
@@ -17,7 +15,6 @@ import {
 
 // Hooks
 import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
 import useFood from '../hooks/use-food';
 
 export default function Home() {

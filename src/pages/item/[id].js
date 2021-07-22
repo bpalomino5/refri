@@ -1,7 +1,6 @@
 // Libraries
-import { useQuery, useQueryClient } from 'react-query';
-import firebase from '../../lib/firebase';
-const firestore = firebase.firestore();
+import { firestore } from '../../lib/firebase';
+import { useQueryClient } from 'react-query';
 
 // Components
 import {
@@ -28,14 +27,14 @@ const FoodItem = () => {
   const queryClient = useQueryClient();
   const foodQuery = useFood();
 
-  const item = foodQuery.data[category].options[option];
-
   const incQuantity = () => {
+    const item = foodQuery.data[category].options[option];
     item.quantity += 1;
     queryClient.setQueryData('food', foodQuery.data);
   };
 
   const decQuantity = () => {
+    const item = foodQuery.data[category].options[option];
     if (item.quantity > 0) {
       item.quantity -= 1;
       queryClient.setQueryData('food', foodQuery.data);
@@ -43,6 +42,7 @@ const FoodItem = () => {
   };
 
   const updateItem = async () => {
+    const item = foodQuery.data[category].options[option];
     const docId = foodQuery.data[category].category;
 
     await firestore
@@ -58,6 +58,8 @@ const FoodItem = () => {
     return <div>loading...</div>;
   }
 
+  const item = foodQuery.data[category].options[option];
+
   return (
     <Container centerContent>
       <Heading as="h1" sx={{ my: 4 }}>
@@ -72,7 +74,7 @@ const FoodItem = () => {
         </Thead>
         <Tbody>
           {Object.keys(item).map((k) => (
-            <Tr>
+            <Tr key={k}>
               <Td>{k}</Td>
               <Td>{item[k]}</Td>
             </Tr>

@@ -1,6 +1,6 @@
 // Libraries
-import firebase from '../lib/firebase';
-const firestore = firebase.firestore();
+import Proptypes from 'prop-types';
+import { firestore } from '../lib/firebase';
 
 // Components
 import {
@@ -23,15 +23,12 @@ import { useState } from 'react';
 import useCollection from '../hooks/use-collection';
 
 const NumberInput = ({ quantity, setQuantity }) => {
-  const {
-    getInputProps,
-    getIncrementButtonProps,
-    getDecrementButtonProps,
-  } = useNumberInput({
-    min: 0,
-    value: quantity,
-    onChange: (valueString) => setQuantity(valueString),
-  });
+  const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
+    useNumberInput({
+      min: 0,
+      value: quantity,
+      onChange: (valueString) => setQuantity(valueString),
+    });
 
   const inc = getIncrementButtonProps();
   const dec = getDecrementButtonProps();
@@ -44,6 +41,11 @@ const NumberInput = ({ quantity, setQuantity }) => {
       <Button {...dec}>-</Button>
     </HStack>
   );
+};
+
+NumberInput.propTypes = {
+  quantity: Proptypes.number,
+  setQuantity: Proptypes.func,
 };
 
 const AddItem = () => {
@@ -69,7 +71,7 @@ const AddItem = () => {
       .update({
         [id]: {
           name,
-          quantity: parseInt(quantity),
+          quantity: parseInt(quantity, 10),
           unit,
         },
       });
@@ -91,8 +93,8 @@ const AddItem = () => {
             value={category}
             placeholder="Select category"
           >
-            {categoriesQuery.data.map((category) => (
-              <option value={category}>{category}</option>
+            {categoriesQuery.data.map((_category) => (
+              <option value={_category}>{_category}</option>
             ))}
           </Select>
         </FormControl>
@@ -114,8 +116,8 @@ const AddItem = () => {
             value={unit}
             placeholder="Select unit"
           >
-            {unitsQuery.data.map((unit) => (
-              <option value={unit}>{unit}</option>
+            {unitsQuery.data.map((_unit) => (
+              <option value={_unit}>{_unit}</option>
             ))}
           </Select>
         </FormControl>

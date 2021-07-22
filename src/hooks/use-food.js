@@ -1,7 +1,6 @@
+// Libraries
 import { useQuery } from 'react-query';
-
-import firebase from '../lib/firebase';
-const firestore = firebase.firestore();
+import { firestore } from '../lib/firebase';
 
 const fetchFood = async () => {
   const data = [];
