@@ -73,12 +73,14 @@ const FoodItem = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {Object.keys(item).map((k) => (
-            <Tr key={k}>
-              <Td>{k}</Td>
-              <Td>{k === 'unit' ? item[k].id : item[k]}</Td>
-            </Tr>
-          ))}
+          {Object.keys(item)
+            .sort()
+            .map((k) => (
+              <Tr key={k}>
+                <Td>{k}</Td>
+                <Td>{k === 'unit' ? item[k].id : item[k]}</Td>
+              </Tr>
+            ))}
         </Tbody>
       </Table>
 
