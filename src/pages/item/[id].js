@@ -1,6 +1,5 @@
 // Libraries
 import { firestore } from '../../lib/firebase';
-import { useQueryClient } from 'react-query';
 
 // Components
 import {
@@ -17,48 +16,60 @@ import {
 } from '@chakra-ui/react';
 
 // Hooks
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useQueryClient } from 'react-query';
 import useFood from '../../hooks/use-food';
 
 const FoodItem = () => {
   const router = useRouter();
-  const { category, option, id } = router.query;
+  const [item, setItem] = useState(null);
+  const { category, id } = router.query;
 
-  const queryClient = useQueryClient();
   const foodQuery = useFood();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (foodQuery.status === 'success') {
+      const selectedItem = foodQuery.data
+        .find((cat) => cat.category === category)
+        .options.find((o) => o.id === id);
+
+      setItem(selectedItem);
+    }
+  }, [foodQuery.status]);
 
   const incQuantity = () => {
-    const item = foodQuery.data[category].options[option];
-    item.quantity += 1;
-    queryClient.setQueryData('food', foodQuery.data);
+    setItem({
+      ...item,
+      quantity: item.quantity + 1,
+    });
   };
 
   const decQuantity = () => {
-    const item = foodQuery.data[category].options[option];
     if (item.quantity > 0) {
-      item.quantity -= 1;
-      queryClient.setQueryData('food', foodQuery.data);
+      setItem({
+        ...item,
+        quantity: item.quantity - 1,
+      });
     }
   };
 
   const updateItem = async () => {
-    const item = foodQuery.data[category].options[option];
-    const docId = foodQuery.data[category].category;
-
     await firestore
       .collection('categories')
-      .doc(docId)
+      .doc(category)
       .update({
         [`${id}.quantity`]: item.quantity,
       });
+
+    await queryClient.invalidateQueries('food');
     router.back();
   };
 
-  if (foodQuery.isLoading) {
+  if (foodQuery.isLoading || !item) {
     return <div>loading...</div>;
   }
-
-  const item = foodQuery.data[category].options[option];
 
   return (
     <Container centerContent>

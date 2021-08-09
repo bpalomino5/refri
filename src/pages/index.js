@@ -22,10 +22,10 @@ export default function Home() {
   const foodQuery = useFood();
 
   const findItem = (option) => {
-    foodQuery.data.forEach((category, i) =>
-      category.options.forEach((item, j) => {
+    foodQuery.data.forEach((category) =>
+      category.options.forEach((item) => {
         if (item.id === option.id) {
-          router.push(`/item/${option.id}?category=${i}&option=${j}`);
+          router.push(`/item/${option.id}?category=${category.category}`);
         }
       })
     );

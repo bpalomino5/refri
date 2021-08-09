@@ -19,6 +19,7 @@ import {
 
 // Hooks
 import { useRouter } from 'next/router';
+import { useQueryClient } from 'react-query';
 import { useState } from 'react';
 import useCollection from '../hooks/use-collection';
 
@@ -58,6 +59,8 @@ const AddItem = () => {
   const categoriesQuery = useCollection('categories');
   const unitsQuery = useCollection('units');
 
+  const queryClient = useQueryClient();
+
   if (categoriesQuery.isLoading || unitsQuery.isLoading) {
     return <div>Loading...</div>;
   }
@@ -76,6 +79,7 @@ const AddItem = () => {
         },
       });
 
+    await queryClient.invalidateQueries('food', { refetchInactive: true });
     router.back();
   };
 
