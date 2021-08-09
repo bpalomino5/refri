@@ -5,7 +5,7 @@ import { firestore } from '../lib/firebase';
 const fetchCollection = async (collectionId) => {
   const querySnapshot = await firestore.collection(collectionId).get();
 
-  return querySnapshot.docs.map((doc) => doc.id);
+  return querySnapshot.docs;
 };
 
 const useCollection = (collectionId) => {

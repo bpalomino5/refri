@@ -72,7 +72,7 @@ const AddItem = () => {
         [id]: {
           name,
           quantity: parseInt(quantity, 10),
-          unit,
+          unit: firestore.collection('units').doc(unit),
         },
       });
 
@@ -93,8 +93,8 @@ const AddItem = () => {
             value={category}
             placeholder="Select category"
           >
-            {categoriesQuery.data.map((_category) => (
-              <option value={_category}>{_category}</option>
+            {categoriesQuery.data.map((categoryDoc) => (
+              <option value={categoryDoc.id}>{categoryDoc.id}</option>
             ))}
           </Select>
         </FormControl>
@@ -116,8 +116,8 @@ const AddItem = () => {
             value={unit}
             placeholder="Select unit"
           >
-            {unitsQuery.data.map((_unit) => (
-              <option value={_unit}>{_unit}</option>
+            {unitsQuery.data.map((unitDoc) => (
+              <option value={unitDoc.id}>{unitDoc.id}</option>
             ))}
           </Select>
         </FormControl>

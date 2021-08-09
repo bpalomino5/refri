@@ -11,7 +11,6 @@ const fetchFood = async () => {
     const options = Object.keys(table).map((key) => ({
       ...table[key],
       id: key,
-      unit: table[key].unit.id,
     }));
 
     data.push({ category: doc.id, options });

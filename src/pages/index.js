@@ -38,7 +38,7 @@ export default function Home() {
     if (option.quantity === 0) {
       label += '❌';
     } else {
-      label += `${option.quantity} ${option.unit ? option.unit : ''}`;
+      label += `${option.quantity} ${option.unit ? option.unit.id : ''}`;
     }
     return label;
   };

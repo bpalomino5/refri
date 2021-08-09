@@ -76,7 +76,7 @@ const FoodItem = () => {
           {Object.keys(item).map((k) => (
             <Tr key={k}>
               <Td>{k}</Td>
-              <Td>{item[k]}</Td>
+              <Td>{k === 'unit' ? item[k].id : item[k]}</Td>
             </Tr>
           ))}
         </Tbody>
