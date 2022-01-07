@@ -1,5 +1,6 @@
 // Libraries
 import { firestore } from '../lib/firebase';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
 
 // Components
 import Select from 'react-select';
@@ -17,7 +18,15 @@ import {
 import { useRouter } from 'next/router';
 import useFood from '../hooks/use-food';
 
-export default function Home() {
+// Config variables
+const SPREADSHEET_ID = process.env.NEXT_PUBLIC_SPREADSHEET_ID;
+const SHEET_ID = process.env.NEXT_PUBLIC_SHEET_ID;
+const CLIENT_EMAIL = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_EMAIL;
+const PRIVATE_KEY = process.env.NEXT_PUBLIC_GOOGLE_SERVICE_PRIVATE_KEY;
+
+const doc = new GoogleSpreadsheet(SPREADSHEET_ID);
+
+export default function Home({ inventory }) {
   const router = useRouter();
   const foodQuery = useFood();
 
@@ -93,4 +102,28 @@ export default function Home() {
       </Center>
     </Container>
   );
+}
+
+export async function getStaticProps() {
+  await doc.useServiceAccountAuth({
+    client_email: CLIENT_EMAIL,
+    private_key: PRIVATE_KEY.replace(/\\n/g, '\n'),
+  });
+
+  await doc.loadInfo();
+  const sheet = doc.sheetsById[SHEET_ID];
+
+  const rows = await sheet.getRows();
+
+  const inventory = rows.map((row) => ({
+    name: row.Name,
+    quantity: row.Quantity,
+    unit: row.Unit,
+    expiration: row['Expiration Date'] || null,
+    category: row.Category,
+  }));
+
+  return {
+    props: { inventory },
+  };
 }
