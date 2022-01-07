@@ -1,5 +1,5 @@
 // Libraries
-import { firestore } from '../lib/firebase';
+import firebase, { firestore } from '../lib/firebase';
 
 // Components
 import Select from 'react-select';
@@ -16,10 +16,12 @@ import {
 // Hooks
 import { useRouter } from 'next/router';
 import useFood from '../hooks/use-food';
+import { useQueryClient } from 'react-query';
 
 export default function Home() {
   const router = useRouter();
   const foodQuery = useFood();
+  const queryClient = useQueryClient();
 
   const findItem = (option) => {
     foodQuery.data.forEach((category) =>
@@ -63,6 +65,26 @@ export default function Home() {
     await Promise.all(ps);
   };
 
+  const clean = async () => {
+    const ps = [];
+    foodQuery.data.forEach((category) => {
+      category.options.forEach((option) => {
+        if (option.quantity === 0) {
+          ps.push(
+            firestore
+              .collection('categories')
+              .doc(category.category)
+              .update({
+                [option.id]: firebase.firestore.FieldValue.delete(),
+              })
+          );
+        }
+      });
+    });
+    await Promise.all(ps);
+    await queryClient.invalidateQueries('food');
+  };
+
   return (
     <Container sx={{ height: '100%', d: 'flex', flexDirection: 'column' }}>
       <main>
@@ -81,6 +103,7 @@ export default function Home() {
         <ButtonGroup spacing={4} sx={{ my: 5 }}>
           <Button onClick={() => router.push('/add-item')}>Add</Button>
           <Button onClick={updateAllItems}>Save All</Button>
+          <Button onClick={clean}>Clean</Button>
         </ButtonGroup>
       </main>
 
