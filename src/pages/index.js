@@ -47,7 +47,7 @@ Sheets.propTypes = {
   groupedOptions: Proptypes.arrayOf(Proptypes.object),
 };
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const rows = await getSheetItems({
     range: 'Items',
     valueRenderOption: 'FORMULA',
@@ -81,6 +81,5 @@ export async function getStaticProps() {
 
   return {
     props: { groupedOptions },
-    revalidate: 1,
   };
 }
