@@ -81,5 +81,6 @@ export async function getStaticProps() {
 
   return {
     props: { groupedOptions },
+    revalidate: 1,
   };
 }
