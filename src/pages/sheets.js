@@ -1,77 +1,50 @@
 // Libraries
-import { google } from 'googleapis';
-import Select from 'react-select';
 import Proptypes from 'prop-types';
 
-async function getSheetItems({ range, valueRenderOption }) {
-  try {
-    const target = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
-    const jwt = new google.auth.JWT(
-      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_EMAIL,
-      null,
-      (process.env.NEXT_PUBLIC_GOOGLE_SERVICE_PRIVATE_KEY || '').replace(
-        /\\n/g,
-        '\n'
-      ),
-      target
-    );
+// API
+import getSheetItems from 'lib/sheets';
 
-    const sheets = google.sheets({ version: 'v4', auth: jwt });
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.NEXT_PUBLIC_SPREADSHEET_ID,
-      range,
-      valueRenderOption,
-    });
+// Components
+import Select from 'react-select';
+import { Spacer, Container, Heading, Text, Center } from '@chakra-ui/react';
 
-    const rows = response.data.values;
-
-    return rows;
-  } catch (err) {
-    console.error(err);
-  }
-  return [];
-}
-const getOptionLabel = (option) => {
-  let label = `${option.name}, `;
-  if (option.quantity === 0) {
-    label += '❌';
-  } else {
-    label += `${option.quantity} ${option.unit || ''}`;
-  }
-  return label;
-};
+// Utilities
+import {
+  getOptionLabel,
+  getUnitFromTable,
+  getCategoryFromTable,
+  getDateFromFormula,
+} from 'utilities/select';
 
 export default function Sheets({ groupedOptions }) {
   return (
-    <div>
-      <Select
-        placeholder="Check what's available"
-        isClearable
-        options={groupedOptions}
-        getOptionLabel={getOptionLabel}
-        noOptionsMessage={() => 'Not found'}
-      />
-    </div>
+    <Container sx={{ height: '100%', d: 'flex', flexDirection: 'column' }}>
+      <main>
+        <Heading as="h1" size="3xl" sx={{ m: 5, textAlign: 'center' }}>
+          Refri
+        </Heading>
+        <Select
+          placeholder="Check what's available"
+          isClearable
+          options={groupedOptions}
+          getOptionLabel={getOptionLabel}
+          noOptionsMessage={() => 'Not found'}
+        />
+      </main>
+
+      <Spacer />
+
+      <Center sx={{ py: 8, borderTop: '1px solid', borderColor: 'gray.200' }}>
+        <Text>
+          Powered by&nbsp;<b>BP</b>
+        </Text>
+      </Center>
+    </Container>
   );
 }
 
 Sheets.propTypes = {
   groupedOptions: Proptypes.arrayOf(Proptypes.object),
-};
-
-const getUnitFromTable = (units, formula) => {
-  const index = parseInt(formula.slice(8), 10) - 2;
-  return units[index];
-};
-
-const getCategoryFromTable = (categories, formula) => {
-  const index = parseInt(formula.slice(13), 10) - 2;
-  return categories[index];
-};
-
-const getDateFromFormula = (formula) => {
-  const [year, month, day] = formula.slice(6, -1).split(',');
-  return month ? `${month}/${day}/${year}` : null;
 };
 
 export async function getStaticProps() {
