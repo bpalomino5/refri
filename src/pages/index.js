@@ -17,7 +17,7 @@ import {
 import { useRouter } from 'next/router';
 import useFood from 'hooks/use-food';
 
-export default function Home({ inventory }) {
+export default function Home() {
   const router = useRouter();
   const foodQuery = useFood();
 

@@ -1,6 +1,6 @@
 // Libraries
 import Proptypes from 'prop-types';
-import { firestore } from '../lib/firebase';
+import { firestore } from 'api/firebase';
 
 // Components
 import {

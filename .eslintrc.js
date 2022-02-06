@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   env: {
     browser: true,
@@ -23,5 +25,12 @@ module.exports = {
     'react/jsx-props-no-spreading': 0,
     'react/require-default-props': 0,
     'import/order': 0,
+  },
+  settings: {
+    'import/resolver': {
+      node: {
+        paths: [path.resolve(__dirname, 'src')],
+      },
+    },
   },
 };
