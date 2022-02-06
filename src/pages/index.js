@@ -1,68 +1,22 @@
 // Libraries
-import { firestore } from 'api/firebase';
+import Proptypes from 'prop-types';
+
+// API
+import getSheetItems from 'api/sheets';
 
 // Components
 import Select from 'react-select';
+import { Spacer, Container, Heading, Text, Center } from '@chakra-ui/react';
+
+// Utilities
 import {
-  Spacer,
-  ButtonGroup,
-  Button,
-  Container,
-  Heading,
-  Text,
-  Center,
-} from '@chakra-ui/react';
+  getOptionLabel,
+  getUnitFromTable,
+  getCategoryFromTable,
+  getDateFromFormula,
+} from 'utilities/select';
 
-// Hooks
-import { useRouter } from 'next/router';
-import useFood from 'hooks/use-food';
-
-export default function Home() {
-  const router = useRouter();
-  const foodQuery = useFood();
-
-  const findItem = (option) => {
-    foodQuery.data.forEach((category) =>
-      category.options.forEach((item) => {
-        if (item.id === option.id) {
-          router.push(`/item/${option.id}?category=${category.category}`);
-        }
-      })
-    );
-
-    return null;
-  };
-
-  const getOptionLabel = (option) => {
-    let label = `${option.name}, `;
-    if (option.quantity === 0) {
-      label += '❌';
-    } else {
-      label += `${option.quantity} ${option.unit ? option.unit.id : ''}`;
-    }
-    return label;
-  };
-
-  /*
-   * Only updates item quantities
-   */
-  const updateAllItems = async () => {
-    const ps = [];
-    foodQuery.data.forEach((category) => {
-      category.options.forEach((option) =>
-        ps.push(
-          firestore
-            .collection('categories')
-            .doc(category.category)
-            .update({
-              [`${option.id}.quantity`]: option.quantity,
-            })
-        )
-      );
-    });
-    await Promise.all(ps);
-  };
-
+export default function Sheets({ groupedOptions }) {
   return (
     <Container sx={{ height: '100%', d: 'flex', flexDirection: 'column' }}>
       <main>
@@ -71,17 +25,11 @@ export default function Home() {
         </Heading>
         <Select
           placeholder="Check what's available"
-          options={foodQuery.data}
+          isClearable
+          options={groupedOptions}
           getOptionLabel={getOptionLabel}
-          getOptionValue={(option) => option.name}
-          formatGroupLabel={(group) => group.category}
           noOptionsMessage={() => 'Not found'}
-          onChange={findItem}
         />
-        <ButtonGroup spacing={4} sx={{ my: 5 }}>
-          <Button onClick={() => router.push('/add-item')}>Add</Button>
-          <Button onClick={updateAllItems}>Save All</Button>
-        </ButtonGroup>
       </main>
 
       <Spacer />
@@ -93,4 +41,45 @@ export default function Home() {
       </Center>
     </Container>
   );
+}
+
+Sheets.propTypes = {
+  groupedOptions: Proptypes.arrayOf(Proptypes.object),
+};
+
+export async function getStaticProps() {
+  const rows = await getSheetItems({
+    range: 'Items',
+    valueRenderOption: 'FORMULA',
+  });
+
+  let units = await getSheetItems({
+    range: 'Units',
+  });
+
+  let categories = await getSheetItems({
+    range: 'Categories',
+  });
+
+  units = units.slice(1).map((unit) => unit[0]);
+  categories = categories.slice(1).map((category) => category[0]);
+
+  const items = rows.slice(1).map((itemRow) => ({
+    name: itemRow[0],
+    quantity: itemRow[1],
+    unit: getUnitFromTable(units, itemRow[2]),
+    date: getDateFromFormula(itemRow[3]),
+    category: getCategoryFromTable(categories, itemRow[4]),
+  }));
+
+  const groupedOptions = categories.map((category) => {
+    return {
+      label: category,
+      options: items.filter((item) => item.category === category),
+    };
+  });
+
+  return {
+    props: { groupedOptions },
+  };
 }
