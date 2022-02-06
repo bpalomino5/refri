@@ -2,7 +2,7 @@
 import Proptypes from 'prop-types';
 
 // API
-import getSheetItems from 'lib/sheets';
+import getSheetItems from 'api/sheets';
 
 // Components
 import Select from 'react-select';

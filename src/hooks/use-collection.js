@@ -1,6 +1,6 @@
 // Libraries
 import { useQuery } from 'react-query';
-import { firestore } from '../lib/firebase';
+import { firestore } from 'api/firebase';
 
 const fetchCollection = async (collectionId) => {
   const querySnapshot = await firestore.collection(collectionId).get();
