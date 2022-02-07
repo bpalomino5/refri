@@ -7,6 +7,7 @@ import getSheetItems from 'api/sheets';
 // Components
 import Select from 'react-select';
 import { Spacer, Container, Heading, Text, Center } from '@chakra-ui/react';
+import Option from 'components/option';
 
 // Utilities
 import {
@@ -24,6 +25,7 @@ export default function Sheets({ groupedOptions }) {
           Refri
         </Heading>
         <Select
+          components={{ Option }}
           placeholder="Check what's available"
           isClearable
           options={groupedOptions}
@@ -44,7 +46,7 @@ export default function Sheets({ groupedOptions }) {
 }
 
 Sheets.propTypes = {
-  groupedOptions: Proptypes.arrayOf(Proptypes.object),
+  groupedOptions: Proptypes.arrayOf(Proptypes.any),
 };
 
 export async function getServerSideProps() {
