@@ -9,7 +9,7 @@ const todayDate = Date.now();
 
 const Option = (props) => {
   const { data } = props;
-  const expiryDate = Date.parse(data.date);
+  const expiryDate = Date.parse(data.expirationDate);
 
   return (
     <Box

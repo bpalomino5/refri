@@ -6,8 +6,9 @@ import getSheetItems from 'api/sheets';
 
 // Components
 import Select from 'react-select';
-import { Spacer, Container, Heading, Text, Center } from '@chakra-ui/react';
+import { Spacer, Container, Heading } from '@chakra-ui/react';
 import Option from 'components/option';
+import Footer from 'components/footer';
 
 // Utilities
 import {
@@ -15,6 +16,7 @@ import {
   getUnitFromTable,
   getCategoryFromTable,
   getDateFromFormula,
+  sanitizeQuantity,
 } from 'utilities/select';
 
 export default function Sheets({ groupedOptions }) {
@@ -22,7 +24,7 @@ export default function Sheets({ groupedOptions }) {
     <Container sx={{ height: '100%', d: 'flex', flexDirection: 'column' }}>
       <main>
         <Heading as="h1" size="3xl" sx={{ m: 5, textAlign: 'center' }}>
-          Refri
+          Inventory
         </Heading>
         <Select
           components={{ Option }}
@@ -33,14 +35,8 @@ export default function Sheets({ groupedOptions }) {
           noOptionsMessage={() => 'Not found'}
         />
       </main>
-
       <Spacer />
-
-      <Center sx={{ py: 8, borderTop: '1px solid', borderColor: 'gray.200' }}>
-        <Text>
-          Powered by&nbsp;<b>BP</b>
-        </Text>
-      </Center>
+      <Footer />
     </Container>
   );
 }
@@ -50,6 +46,7 @@ Sheets.propTypes = {
 };
 
 export async function getServerSideProps() {
+  // Query Inventory Data
   const rows = await getSheetItems({
     range: 'Items',
     valueRenderOption: 'FORMULA',
@@ -63,17 +60,20 @@ export async function getServerSideProps() {
     range: 'Categories',
   });
 
+  // Remove Header Data
   units = units.slice(1).map((unit) => unit[0]);
   categories = categories.slice(1).map((category) => category[0]);
 
+  // Reformat items into JSON array
   const items = rows.slice(1).map((itemRow) => ({
     name: itemRow[0],
-    quantity: itemRow[1],
+    quantity: sanitizeQuantity(itemRow[1]),
     unit: getUnitFromTable(units, itemRow[2]),
-    date: getDateFromFormula(itemRow[3]),
+    expirationDate: getDateFromFormula(itemRow[3]),
     category: getCategoryFromTable(categories, itemRow[4]),
   }));
 
+  // Group item objects by category for render in Select Provider
   const groupedOptions = categories.map((category) => {
     return {
       label: category,

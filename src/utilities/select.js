@@ -22,3 +22,7 @@ export const getDateFromFormula = (formula) => {
   const [year, month, day] = formula.slice(6, -1).split(',');
   return month ? `${month}/${day}/${year}` : null;
 };
+
+export const sanitizeQuantity = (quantity) => {
+  return quantity[0] === '=' ? quantity.slice(1) : quantity;
+};
